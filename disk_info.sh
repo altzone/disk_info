@@ -7,9 +7,9 @@ printdf()
 {
 df=(`df -h --total | grep "unrecognized"`)
         if [[ ! -n "$df" ]]; then
-                df -h --total | grep -Ev 'udev|tmpfs|none'
+                df -h --total | grep -Ev 'udev|tmpfs|none' > /tmp/disk_df.tmp && cat /tmp/disk_df.tmp
         else
-                df -h | grep -Ev 'udev|tmpfs|none'
+                df -h | grep -Ev 'udev|tmpfs|none' > /tmp/disk_df.tmp && cat /tmp/disk_df.tmp
         fi
 }
 
@@ -191,12 +191,45 @@ printcycle()
                 echo
 }
 
+### Programme generation HTML ###
+html()
+{
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+
+<html>
+<head>
+        <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+        <title>Disque info</title>
+</head>
+<body>
+<center>
+<H1>Informations des disques dur</br></H1>
+' > /tmp/html.tmp
+echo "<table border=1><tr><th>Serveur</th><th>Type</th><th>Kernel</th></tr>
+      <tr><td>$HOSTNAME</td><td>`uname -s`</td><td>`uname -r`</td></tr></table></br></br><h2>Moutpoint and usage</h2>" >> /tmp/html.tmp
+cat /tmp/disk_df.tmp | sed s/Mounted\ on/Moutpoint/g | awk 'BEGIN{ print("<table border=1><tr>") }
+			{ 
+				for ( i = 1; i<=NF ; i++ ) { 
+					printf "<td> %s </td> ", $i
+				}
+			print "</tr>"
+			}
+			END{ 
+			print("</table>")
+			}' >> /tmp/html.tmp
+
+
+}
+
+
 
 
 ### Programme de lecture ###
 play()
-
 {
+
+
 ### programme principal
 > /tmp/diskfull
 
@@ -209,6 +242,12 @@ echo "
 => Appuyez sur q puis entrer pour quiter
 ##################################################################################
 "
+html
+
+
+
+
+
 checkctrl
 echo "<------------------ Points de montages -------------------->"
 printdf
@@ -223,4 +262,4 @@ printtemp
 printpowerup
 printcycle
 }
-checkos && checksmarttools && play | less 
+checkos && checksmarttools && play | less  
