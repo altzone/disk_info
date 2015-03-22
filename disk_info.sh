@@ -1,7 +1,6 @@
 #!/bin/bash
 #Definisition des variables
-OLDLANG=$LANG ; LANG="en-US"
-
+OLDLANG=$LANG
 > /tmp/diskfull
 tempdir="/tmp"
 
@@ -128,6 +127,7 @@ printtemp()
 
 printpowerup()
 {
+        LANG="en-US"
         if [[ -n "${powerstats}" ]]; then
                 echo "<------------------  Fonctionnement  ---------------------->"
                 nbvar=${#powerstats[*]}
