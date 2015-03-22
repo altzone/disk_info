@@ -1,5 +1,7 @@
 #!/bin/bash
 #Definisition des variables
+OLDLANG=$LANG ; LANG="en-US"
+
 > /tmp/diskfull
 tempdir="/tmp"
 
@@ -263,3 +265,4 @@ printpowerup
 printcycle
 }
 checkos && checksmarttools && play | less  
+LANG=$OLDLANG
